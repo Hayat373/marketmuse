@@ -14,6 +14,39 @@ interface ProductCard3DProps {
   isWishlisted: boolean;
 }
 
+const COLORWAYS: Record<string, { label: string; hex: string }[]> = {
+  Outerwear: [
+    { label: "Camel", hex: "#c49f78" },
+    { label: "Obsidian", hex: "#1f2024" },
+    { label: "Ivory", hex: "#f0ece3" },
+  ],
+  Essentials: [
+    { label: "Ivory", hex: "#f0ece3" },
+    { label: "Titanium", hex: "#8fa2b4" },
+    { label: "Onyx", hex: "#1c1c1f" },
+  ],
+  Tailoring: [
+    { label: "Stone", hex: "#a49d93" },
+    { label: "Espresso", hex: "#3b2f27" },
+    { label: "Graphite", hex: "#2b2c30" },
+  ],
+  Accessories: [
+    { label: "Espresso", hex: "#3b2f27" },
+    { label: "Cognac", hex: "#9b5329" },
+    { label: "Chrome", hex: "#b8bcc4" },
+  ],
+  Knitwear: [
+    { label: "Oat", hex: "#d8cfc0" },
+    { label: "Mink", hex: "#85786d" },
+    { label: "Charcoal", hex: "#29292d" },
+  ],
+  Footwear: [
+    { label: "Cream", hex: "#eeeae0" },
+    { label: "Silver", hex: "#c0c5cc" },
+    { label: "Night", hex: "#141518" },
+  ],
+};
+
 export function ProductCard3D({
   product,
   index,
@@ -26,6 +59,13 @@ export function ProductCard3D({
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
+
+  const swatches = COLORWAYS[product.category] || [
+    { label: product.color, hex: "#c49f78" },
+    { label: "Obsidian", hex: "#1f2024" },
+    { label: "Ivory", hex: "#f0ece3" },
+  ];
+  const [activeColor, setActiveColor] = useState(swatches[0].label);
 
   function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
@@ -79,7 +119,7 @@ export function ProductCard3D({
         <div
           className="card-glare"
           style={{
-            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.35) 0%, rgba(56,189,248,0.18) 35%, transparent 70%)`,
+            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.45) 0%, rgba(157,59,137,0.18) 35%, transparent 70%)`,
             opacity: glarePos.opacity,
           }}
         />
@@ -155,6 +195,27 @@ export function ProductCard3D({
           </div>
 
           <p className="card-description">{product.description}</p>
+
+          {/* Interactive Fashion Colorway Swatches */}
+          <div className="card-swatches-row">
+            <span className="swatches-label">COLORWAY: {activeColor.toUpperCase()}</span>
+            <div className="swatches-list">
+              {swatches.map((s) => (
+                <button
+                  key={s.label}
+                  className={`swatch-circle ${activeColor === s.label ? "swatch-active" : ""}`}
+                  style={{ backgroundColor: s.hex }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    sound.playClick();
+                    setActiveColor(s.label);
+                  }}
+                  title={s.label}
+                  aria-label={`Select ${s.label} color`}
+                />
+              ))}
+            </div>
+          </div>
 
           <div className="card-footer-action">
             <span className="card-finish">{product.materialFinish.split("&")[0]}</span>

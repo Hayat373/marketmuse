@@ -3,11 +3,12 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Float } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingBag, Heart, Layers, Eye, Sparkles, Check, Sliders } from "lucide-react";
+import { X, ShoppingBag, Heart, Layers, Eye, Sparkles, Check, Sliders, Wind } from "lucide-react";
 import type { Product } from "../data/products";
 import { sound } from "../audio/soundEngine";
 
 type MaterialType = "obsidian" | "gold" | "quartz" | "titanium";
+type MotionMode = "still" | "runway" | "zerog";
 
 interface ProductInspector3DProps {
   product: Product;
@@ -17,19 +18,20 @@ interface ProductInspector3DProps {
   isWishlisted: boolean;
 }
 
-// Procedural 3D Holographic Geometry based on product type
 function HologramGeometry({
   type,
   material,
   exploded,
   wireframe,
   slice,
+  motionMode,
 }: {
   type: Product["geometryType"];
   material: MaterialType;
   exploded: boolean;
   wireframe: boolean;
   slice: number;
+  motionMode: MotionMode;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const part1Ref = useRef<THREE.Mesh>(null);
@@ -39,7 +41,23 @@ function HologramGeometry({
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    groupRef.current.rotation.y = t * 0.35;
+
+    // Rotation and kinetic drape physics depending on motion mode
+    if (motionMode === "runway") {
+      groupRef.current.rotation.y = Math.sin(t * 1.8) * 0.4 + t * 0.2;
+      groupRef.current.position.y = Math.sin(t * 3.6) * 0.12;
+      groupRef.current.rotation.z = Math.cos(t * 1.8) * 0.08;
+    } else if (motionMode === "zerog") {
+      groupRef.current.rotation.y = t * 0.4;
+      groupRef.current.rotation.x = Math.sin(t * 0.8) * 0.18;
+      groupRef.current.rotation.z = Math.cos(t * 0.6) * 0.14;
+      groupRef.current.position.y = Math.sin(t * 1.2) * 0.2;
+    } else {
+      groupRef.current.rotation.y = t * 0.35;
+      groupRef.current.position.y = 0;
+      groupRef.current.rotation.x = 0;
+      groupRef.current.rotation.z = 0;
+    }
 
     // Exploded view animation interpolation
     const explodeOffset = exploded ? 1.25 : 0;
@@ -214,6 +232,7 @@ export function ProductInspector3D({
   const [wireframe, setWireframe] = useState(false);
   const [slice, setSlice] = useState(1);
   const [quantity, setQuantity] = useState(1);
+  const [motionMode, setMotionMode] = useState<MotionMode>("still");
 
   const materials: { id: MaterialType; label: string; dotColor: string }[] = [
     { id: "obsidian", label: "Obsidian", dotColor: "#171613" },
@@ -286,6 +305,7 @@ export function ProductInspector3D({
                       exploded={exploded}
                       wireframe={wireframe}
                       slice={slice}
+                      motionMode={motionMode}
                     />
                   </Float>
                 </Suspense>
@@ -319,6 +339,42 @@ export function ProductInspector3D({
                 >
                   <Eye size={14} />
                   <span>X-Ray Wireframe</span>
+                </button>
+              </div>
+
+              {/* Kinetic Motion Drape Mode */}
+              <div className="tool-buttons">
+                <span className="picker-label">DRAPE:</span>
+                <button
+                  className={`tool-btn ${motionMode === "still" ? "tool-active" : ""}`}
+                  onClick={() => {
+                    sound.playClick();
+                    setMotionMode("still");
+                  }}
+                >
+                  Still
+                </button>
+                <button
+                  className={`tool-btn ${motionMode === "runway" ? "tool-active" : ""}`}
+                  onClick={() => {
+                    sound.playClick();
+                    setMotionMode("runway");
+                  }}
+                  title="Simulate Stride & Wind"
+                >
+                  <Wind size={13} />
+                  Runway
+                </button>
+                <button
+                  className={`tool-btn ${motionMode === "zerog" ? "tool-active" : ""}`}
+                  onClick={() => {
+                    sound.playClick();
+                    setMotionMode("zerog");
+                  }}
+                  title="Simulate Zero-G Float"
+                >
+                  <Sparkles size={13} />
+                  Zero-G
                 </button>
               </div>
 

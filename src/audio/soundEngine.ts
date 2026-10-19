@@ -108,6 +108,33 @@ class SoundEngine {
     } catch {}
   }
 
+  // Harmonic glissando / harp strum when hovering across the 3D wave cards
+  public playStrum(index: number, total: number = 46) {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      // Luxurious warm pentatonic scale spanning 2 octaves
+      const pentatonic = [
+        261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00, 1046.50
+      ];
+      const noteIdx = Math.floor((index / total) * pentatonic.length) % pentatonic.length;
+      const freq = pentatonic[noteIdx];
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.015, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch {}
+  }
+
   public playClick() {
     if (!this.enabled || !this.ctx || !this.masterGain) return;
     try {

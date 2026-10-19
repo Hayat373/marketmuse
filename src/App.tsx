@@ -8,12 +8,14 @@ import {
   Heart,
   Menu,
   Sparkles,
+  Palette,
   X,
 } from "lucide-react";
 import { products } from "./data/products";
 import type { Product } from "./data/products";
 import { DimensionCanvas } from "./components/DimensionCanvas";
 import type { DimensionMode, ColorEpoch } from "./components/DimensionCanvas";
+import type { WaveMaterialMode } from "./components/KineticWave3D";
 import { ProductCard3D } from "./components/ProductCard3D";
 import { ProductInspector3D } from "./components/ProductInspector3D";
 import { ChronoTimeline } from "./components/ChronoTimeline";
@@ -30,6 +32,7 @@ export default function App() {
   // Dimensional & Temporal State (Default: Wave mode matching reference video)
   const [epoch, setEpoch] = useState<ColorEpoch>("quantum");
   const [dimensionMode, setDimensionMode] = useState<DimensionMode>("wave");
+  const [wavePalette, setWavePalette] = useState<WaveMaterialMode>("prismatic");
   const [warpSpeed, setWarpSpeed] = useState<number>(1.0);
   const [coords4D, setCoords4D] = useState<[number, number, number, number]>([0.42, -0.18, 1.05, 0.77]);
 
@@ -235,6 +238,7 @@ export default function App() {
             mode={dimensionMode}
             epoch={epoch}
             warpSpeed={warpSpeed}
+            wavePalette={wavePalette}
             onCoordUpdate={setCoords4D}
             onWaveClick={(idx) => {
               sound.playInspect();
@@ -247,13 +251,13 @@ export default function App() {
         {/* Center Prompt Callout under the Wave */}
         <div className="hero-center-callout">
           <p className="callout-prompt">
-            Are you ready to take the first step and start your journey today?
+            Are you ready to explore the first 4D haute couture edit?
           </p>
           <button
             className="cta-pill-button"
             onClick={() => scrollToSection("collection")}
           >
-            <span>GET STARTED</span>
+            <span>EXPLORE THE CAPSULE</span>
           </button>
         </div>
 
@@ -266,6 +270,42 @@ export default function App() {
             <ArrowDown size={14} />
             <span>DISCOVER MORE</span>
           </button>
+
+          {/* Interactive Fabric Swatch Palette Switcher */}
+          {dimensionMode === "wave" && (
+            <div className="wave-palette-bar">
+              <span className="dock-status-label">
+                <Palette size={12} /> SWATCH:
+              </span>
+              <button
+                className={`palette-chip ${wavePalette === "prismatic" ? "palette-active" : ""}`}
+                onClick={() => {
+                  sound.playClick();
+                  setWavePalette("prismatic");
+                }}
+              >
+                Prismatic Acrylic
+              </button>
+              <button
+                className={`palette-chip ${wavePalette === "silk_gold" ? "palette-active" : ""}`}
+                onClick={() => {
+                  sound.playClick();
+                  setWavePalette("silk_gold");
+                }}
+              >
+                Silk &amp; Gold
+              </button>
+              <button
+                className={`palette-chip ${wavePalette === "obsidian" ? "palette-active" : ""}`}
+                onClick={() => {
+                  sound.playClick();
+                  setWavePalette("obsidian");
+                }}
+              >
+                Obsidian Matrix
+              </button>
+            </div>
+          )}
 
           {/* Telemetry and Mode switch */}
           <div className="hero-mode-dock">

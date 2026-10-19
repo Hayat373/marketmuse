@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Float } from "@react-three/drei";
 import { KineticWave3D } from "./KineticWave3D";
+import type { WaveMaterialMode } from "./KineticWave3D";
 import { Tesseract4D } from "./Tesseract4D";
 import { ParticleSingularity } from "./ParticleSingularity";
 
@@ -12,6 +13,7 @@ interface DimensionCanvasProps {
   mode: DimensionMode;
   epoch: ColorEpoch;
   warpSpeed: number;
+  wavePalette?: WaveMaterialMode;
   onCoordUpdate?: (coords: [number, number, number, number]) => void;
   onWaveClick?: (index: number) => void;
 }
@@ -20,6 +22,7 @@ export function DimensionCanvas({
   mode,
   epoch,
   warpSpeed,
+  wavePalette = "prismatic",
   onCoordUpdate,
   onWaveClick,
 }: DimensionCanvasProps) {
@@ -34,6 +37,7 @@ export function DimensionCanvas({
           <Float speed={0.8 * warpSpeed} rotationIntensity={0.08} floatIntensity={0.12}>
             <KineticWave3D
               speed={warpSpeed}
+              materialMode={wavePalette}
               onCoordUpdate={onCoordUpdate}
               onCardClick={onWaveClick}
             />
