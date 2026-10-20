@@ -286,6 +286,8 @@ To add a new piece to the collection, append a new object conforming to the `Pro
 
 ![Pulseboard Dashboard](public/marketmuse.png)
 
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you'd like to improve the 4D mathematics, introduce new procedural garment geometries, or refine the sound engine:
@@ -297,6 +299,12 @@ Contributions are welcome! If you'd like to improve the 4D mathematics, introduc
 5. Open a Pull Request
 
 ---
+
+## Live Demo
+
+[Open Pulseboard](https://marketmuse-mnu5x7vab-hayats-projects-e4ba8944.vercel.app/)
+
+--- 
 
 ## 📜 License
 
